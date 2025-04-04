@@ -31,6 +31,18 @@ const ProductSearchForm = () => {
 
   useEffect(() => {
     setSearchResults(JSON.parse(localStorage.getItem("Search Results") || "[]"))
+
+    window.addEventListener("click", (event) => {
+      const target = event.target as HTMLElement
+
+      if (
+        target.tagName !== "UL" &&
+        target.tagName !== "LI" &&
+        target.tagName !== "INPUT"
+      ) {
+        setIsOpen(false)
+      }
+    })
   }, [])
 
   useEffect(() => {
@@ -49,12 +61,12 @@ const ProductSearchForm = () => {
     }
 
     fetchProducts()
-  }, [productTitle, searchResults])
+  }, [productTitle, searchResults, loading])
 
   const handleSubmit = (e: any) => {
     e.preventDefault()
 
-    const trimmedQuery = searchQuery.trim() // Remove leading and trailing spaces
+    const trimmedQuery = searchQuery.trim()
 
     if (trimmedQuery !== "") {
       const storedResults = JSON.parse(localStorage.getItem("Search Results") || "[]")
@@ -101,7 +113,6 @@ const ProductSearchForm = () => {
               onFocus={() => {
                 setIsOpen(true)
               }}
-              onBlur={() => setIsOpen(false)} // Delay to allow click selection
               className="w-full bg-white text-black border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Select a product..."
             />
@@ -119,10 +130,10 @@ const ProductSearchForm = () => {
                 <li
                   className="text-center text-sm px-3 py-2 cursor-pointer hover:bg-gray-100 border-t hover:rounded-b"
                   onClick={() => {
-                    localStorage.removeItem("Search Results")
                     setSearchResults([])
                     setIsOpen(false)
                     setSearchQuery("")
+                    localStorage.removeItem("Search Results")
                   }}
                 >
                   Clear Recent Searches
@@ -134,7 +145,8 @@ const ProductSearchForm = () => {
 
         <button
           type="submit"
-          className="text-black bg-white rounded-md px-3 py-1 hover:scale-105 transition will-change-transform"
+          className="text-black bg-white rounded-md px-3 py-1 hover:scale-105 transition will-change-transform cursor-pointer"
+          onClick={() => setIsOpen(false)}
         >
           Submit
         </button>
@@ -143,13 +155,13 @@ const ProductSearchForm = () => {
         <div>
           {loading && <Spinner loading={loading} />}
 
-          {hasSearched && products.length === 0 && <h2>No Search Results.</h2>}
-
-          {products.length > 0 && hasSearched && productTitle ? (
-            products.map((product) => <ProductCard key={product.id} product={product} />)
-          ) : (
-            <h4>Please search for your desired product...</h4>
+          {hasSearched && products.length === 0 && (
+            <h2 className="text-center">No Search Results.</h2>
           )}
+
+          {products.length > 0 &&
+            hasSearched &&
+            products.map((product) => <ProductCard key={product.id} product={product} />)}
         </div>
       )}
     </div>
