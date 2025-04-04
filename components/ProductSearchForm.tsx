@@ -122,6 +122,7 @@ const ProductSearchForm = () => {
                   <li
                     key={i}
                     onMouseOver={() => setSearchQuery(searchResult)}
+                    onClick={() => setIsOpen(false)}
                     className="px-3 py-2 cursor-pointer hover:bg-gray-100 hover:rounded-t"
                   >
                     {searchResult}
